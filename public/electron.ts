@@ -7,7 +7,9 @@ let win: BrowserWindow;
 const createWindow = () => {
   win = new BrowserWindow({
     width: 600,
+    minWidth: 500,
     height: 750,
+    minHeight: 500,
     resizable: true,
     fullscreen: false,
     title: 'm3u8 Downloader GUI',

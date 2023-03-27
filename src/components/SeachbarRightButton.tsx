@@ -1,17 +1,19 @@
-import { ActionIcon, MantineTheme } from '@mantine/core';
+import { ActionIcon, useMantineTheme } from '@mantine/core';
 import { IconClipboard, IconDownload } from '@tabler/icons-react';
 
 interface Props {
-  theme: MantineTheme;
   setLink: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function SeachbarRightButton({ theme, setLink }: Props) {
+export default function SeachbarRightButton({ setLink }: Props) {
+  const theme = useMantineTheme();
+
   const pasteFromClipboard = async () => {
     const text = await navigator.clipboard.readText();
     setLink(text);
   };
 
+  console.log(theme.primaryColor);
   return (
     <div
       style={{
