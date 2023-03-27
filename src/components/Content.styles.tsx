@@ -1,9 +1,10 @@
 import styled from '@emotion/styled';
 
-export const LibraryContainerDiv = styled.div`
+export const ContentContainerDiv = styled.div`
   flex: 1;
   width: 100%;
   overflow-y: auto;
+  padding: 15px;
   &::-webkit-scrollbar {
     width: 6px;
   }

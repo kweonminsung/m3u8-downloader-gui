@@ -1,28 +1,47 @@
-import { TextInput } from '@mantine/core';
-import { IconLink } from '@tabler/icons-react';
+import { ActionIcon, Textarea } from '@mantine/core';
+import { IconClipboard, IconLink } from '@tabler/icons-react';
 import { SeachbarContainerDiv } from './Searchbar.styles';
-import { useState } from 'react';
-import SeachbarRightButton from './SeachbarRightButton';
 
-export default function SearchBar() {
-  const [link, setLink] = useState<string>('');
+interface Props {
+  fetchString: string;
+  setFetchString: React.Dispatch<React.SetStateAction<string>>;
+}
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLink(event.target.value);
+export default function SearchBar({ fetchString, setFetchString }: Props) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFetchString(event.target.value);
+  };
+
+  const pasteFromClipboard = async () => {
+    const text = await navigator.clipboard.readText();
+    setFetchString(text);
   };
 
   return (
     <SeachbarContainerDiv>
-      <TextInput
-        icon={<IconLink size="1.1rem" stroke={1.5} />}
+      <Textarea
         radius="md"
-        size="md"
-        rightSection={<SeachbarRightButton setLink={setLink} />}
-        placeholder="Input .m3u8 Download Link"
+        autosize
+        minRows={5}
+        maxRows={10}
+        icon={<IconLink size="1.1rem" stroke={1.5} />}
+        placeholder="Input Node.js fetch copy of .m3u8 file URL"
+        rightSection={
+          <ActionIcon
+            onClick={() => {
+              pasteFromClipboard();
+            }}
+          >
+            <IconClipboard />
+          </ActionIcon>
+        }
         rightSectionWidth={42}
+        value={fetchString}
         onChange={handleInputChange}
-        value={link}
-      />
+        style={{
+          scrollbarColor: '#228be6',
+        }}
+      ></Textarea>
     </SeachbarContainerDiv>
   );
 }
