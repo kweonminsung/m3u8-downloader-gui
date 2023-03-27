@@ -37,7 +37,7 @@ export function DownloadButton({ fetchString, setFetchString }: Props) {
         method: parsed[1].method,
       };
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error('Invalid Node.js fetch string');
     }
   };

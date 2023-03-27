@@ -1,6 +1,6 @@
-import { ActionIcon, Textarea } from '@mantine/core';
+import { ActionIcon } from '@mantine/core';
 import { IconClipboard, IconLink } from '@tabler/icons-react';
-import { SeachbarContainerDiv } from './Searchbar.styles';
+import { SeachbarContainerDiv, SearchbarTextarea } from './Searchbar.styles';
 
 interface Props {
   fetchString: string;
@@ -19,7 +19,7 @@ export default function SearchBar({ fetchString, setFetchString }: Props) {
 
   return (
     <SeachbarContainerDiv>
-      <Textarea
+      <SearchbarTextarea
         radius="md"
         autosize
         minRows={5}
@@ -38,10 +38,7 @@ export default function SearchBar({ fetchString, setFetchString }: Props) {
         rightSectionWidth={42}
         value={fetchString}
         onChange={handleInputChange}
-        style={{
-          scrollbarColor: '#228be6',
-        }}
-      ></Textarea>
+      ></SearchbarTextarea>
     </SeachbarContainerDiv>
   );
 }
