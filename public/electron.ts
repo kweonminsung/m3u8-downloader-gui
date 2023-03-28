@@ -1,6 +1,13 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import * as isDev from 'electron-is-dev';
 import * as path from 'path';
+import axios, { AxiosResponseHeaders, Method } from 'axios';
+
+interface ParsedFetchString {
+  url: string;
+  headers: AxiosResponseHeaders;
+  method: Method;
+}
 
 let win: BrowserWindow;
 
@@ -19,6 +26,7 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       devTools: isDev,
+      preload: __dirname + '/preload.js',
     },
   });
 
@@ -37,7 +45,20 @@ const createWindow = () => {
   win.focus();
 };
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+
+  ipcMain.on('download', async (event, payload: ParsedFetchString) => {
+    const { url, method, headers } = payload;
+
+    const result = await axios({
+      url,
+      method,
+      headers,
+    });
+    console.log(result);
+  });
+});
 
 app.on('activate', () => {
   if (win === null) {

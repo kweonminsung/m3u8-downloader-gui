@@ -2,20 +2,33 @@ import { Button } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconDownload, IconTransform } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { ParsedFetchString } from '../types/parsedFetchString';
+import { IPC } from '../utils/IPC';
 
 interface Props {
+  toggle: () => void;
   fetchString: string;
   setFetchString: React.Dispatch<React.SetStateAction<string>>;
+  parsedFetchString: ParsedFetchString | null;
+  setParsedFetchString: React.Dispatch<
+    React.SetStateAction<ParsedFetchString | null>
+  >;
 }
 
-export function DownloadButton({ fetchString, setFetchString }: Props) {
+export function DownloadButton({
+  fetchString,
+  setFetchString,
+  toggle,
+  parsedFetchString,
+  setParsedFetchString,
+}: Props) {
   const [canDownload, setCanDownload] = useState<boolean>(false);
 
   useEffect(() => {
     setCanDownload(false);
   }, [fetchString]);
 
-  const parseFetchString = (fetchString: string) => {
+  const parseFetchString = (fetchString: string): ParsedFetchString => {
     try {
       const parsed = JSON.parse(
         '[' +
@@ -44,9 +57,9 @@ export function DownloadButton({ fetchString, setFetchString }: Props) {
 
   const convertToJson = () => {
     try {
-      parseFetchString(fetchString);
-
+      setParsedFetchString(parseFetchString(fetchString));
       setCanDownload(true);
+      toggle();
     } catch (err) {
       showNotification({
         color: 'red',
@@ -56,7 +69,10 @@ export function DownloadButton({ fetchString, setFetchString }: Props) {
     }
   };
 
-  const download = () => {
+  const download = async () => {
+    const temp = await IPC.send('download', parsedFetchString);
+    console.log(temp);
+
     setCanDownload(false);
   };
 
