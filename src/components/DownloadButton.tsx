@@ -1,29 +1,34 @@
-import { Button } from '@mantine/core';
+import { Button, Collapse } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import { IconDownload, IconTransform } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { IconDownload, IconTransform, IconX } from '@tabler/icons-react';
+import { useEffect } from 'react';
 import { ParsedFetchString } from '../types/parsedFetchString';
 import { IPC } from '../utils/IPC';
+import { VideoData } from '../types/videoData';
 
 interface Props {
-  toggle: () => void;
+  canDownload: boolean;
+  setCanDownload: React.Dispatch<React.SetStateAction<boolean>>;
   fetchString: string;
-  setFetchString: React.Dispatch<React.SetStateAction<string>>;
   parsedFetchString: ParsedFetchString | null;
   setParsedFetchString: React.Dispatch<
     React.SetStateAction<ParsedFetchString | null>
   >;
+  isDownloading: boolean;
+  setIsDownloading: React.Dispatch<React.SetStateAction<boolean>>;
+  setVideoData: React.Dispatch<React.SetStateAction<VideoData | undefined>>;
 }
 
 export function DownloadButton({
+  canDownload,
+  setCanDownload,
   fetchString,
-  setFetchString,
-  toggle,
   parsedFetchString,
   setParsedFetchString,
+  isDownloading,
+  setIsDownloading,
+  setVideoData,
 }: Props) {
-  const [canDownload, setCanDownload] = useState<boolean>(false);
-
   useEffect(() => {
     setCanDownload(false);
   }, [fetchString]);
@@ -59,7 +64,6 @@ export function DownloadButton({
     try {
       setParsedFetchString(parseFetchString(fetchString));
       setCanDownload(true);
-      toggle();
     } catch (err) {
       showNotification({
         color: 'red',
@@ -70,23 +74,48 @@ export function DownloadButton({
   };
 
   const download = async () => {
-    const temp = await IPC.send('download', parsedFetchString);
-    console.log(temp);
+    await IPC.send('downloadM3U8', parsedFetchString);
+    await IPC.receive(
+      'downloadM3U8',
+      (data: { success: boolean; data: VideoData }) => {
+        console.log(data);
+        if (!data.success) return;
 
-    setCanDownload(false);
+        console.log(data);
+        setVideoData(data.data);
+        setIsDownloading(true);
+      }
+    );
   };
 
   return (
-    <Button
-      style={{
-        width: '100%',
-      }}
-      onClick={() => {
-        if (canDownload) download();
-        else convertToJson();
-      }}
-    >
-      {canDownload ? <IconDownload /> : <IconTransform />}
-    </Button>
+    <>
+      <Button
+        style={{
+          width: '100%',
+        }}
+        disabled={isDownloading}
+        onClick={() => {
+          if (canDownload) download();
+          else convertToJson();
+        }}
+      >
+        {canDownload ? <IconDownload /> : <IconTransform />}
+      </Button>
+      <Collapse in={isDownloading}>
+        <Button
+          color="red"
+          style={{
+            width: '100%',
+          }}
+          onClick={() => {
+            setCanDownload(false);
+            setIsDownloading(false);
+          }}
+        >
+          <IconX />
+        </Button>
+      </Collapse>
+    </>
   );
 }

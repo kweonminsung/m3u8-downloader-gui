@@ -1,39 +1,54 @@
-import { useMantineTheme } from '@mantine/core';
+import { Collapse, useMantineTheme } from '@mantine/core';
 import { ContentContainerDiv } from './Content.styles';
 import { DownloadButton } from './DownloadButton';
 import ConvertResult from './ConvertResult';
-import { useDisclosure } from '@mantine/hooks';
 import { ParsedFetchString } from '../types/parsedFetchString';
+import { useState } from 'react';
+import { Downloading } from './Downloading';
+import { VideoData } from '../types/videoData';
 
 interface Props {
   fetchString: string;
-  setFetchString: React.Dispatch<React.SetStateAction<string>>;
   parsedFetchString: ParsedFetchString | null;
   setParsedFetchString: React.Dispatch<
     React.SetStateAction<ParsedFetchString | null>
   >;
+  isDownloading: boolean;
+  setIsDownloading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Content({
   fetchString,
-  setFetchString,
   parsedFetchString,
   setParsedFetchString,
+  isDownloading,
+  setIsDownloading,
 }: Props) {
   const theme = useMantineTheme();
 
-  const [opened, { toggle }] = useDisclosure(false);
+  const [canDownload, setCanDownload] = useState<boolean>(false);
+  const [videoData, setVideoData] = useState<VideoData>();
 
   return (
     <ContentContainerDiv theme={theme}>
-      <ConvertResult opened={opened} parsedFetchString={parsedFetchString} />
+      <ConvertResult
+        canDownload={canDownload}
+        parsedFetchString={parsedFetchString}
+      />
+
+      <Collapse in={isDownloading}>
+        <Downloading videoData={videoData} />
+      </Collapse>
 
       <DownloadButton
-        toggle={toggle}
+        canDownload={canDownload}
+        setCanDownload={setCanDownload}
         fetchString={fetchString}
-        setFetchString={setFetchString}
         parsedFetchString={parsedFetchString}
         setParsedFetchString={setParsedFetchString}
+        isDownloading={isDownloading}
+        setIsDownloading={setIsDownloading}
+        setVideoData={setVideoData}
       />
     </ContentContainerDiv>
   );

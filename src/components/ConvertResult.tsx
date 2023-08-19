@@ -2,13 +2,16 @@ import { Badge, Box, Collapse, Divider, List, Text } from '@mantine/core';
 import { ParsedFetchString } from '../types/parsedFetchString';
 
 interface Props {
-  opened: boolean;
+  canDownload: boolean;
   parsedFetchString: ParsedFetchString | null;
 }
 
-export default function ConvertResult({ opened, parsedFetchString }: Props) {
+export default function ConvertResult({
+  canDownload,
+  parsedFetchString,
+}: Props) {
   return (
-    <Collapse in={opened}>
+    <Collapse in={canDownload}>
       {parsedFetchString && (
         <Box py={10} px={15}>
           <Text fz="xs" align="center">

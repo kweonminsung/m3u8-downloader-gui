@@ -5,9 +5,14 @@ import { SeachbarContainerDiv, SearchbarTextarea } from './Searchbar.styles';
 interface Props {
   fetchString: string;
   setFetchString: React.Dispatch<React.SetStateAction<string>>;
+  isDownloading: boolean;
 }
 
-export default function SearchBar({ fetchString, setFetchString }: Props) {
+export default function SearchBar({
+  fetchString,
+  setFetchString,
+  isDownloading,
+}: Props) {
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFetchString(event.target.value);
   };
@@ -21,6 +26,7 @@ export default function SearchBar({ fetchString, setFetchString }: Props) {
     <SeachbarContainerDiv>
       <SearchbarTextarea
         radius="md"
+        disabled={isDownloading}
         autosize
         minRows={5}
         maxRows={10}
@@ -28,6 +34,7 @@ export default function SearchBar({ fetchString, setFetchString }: Props) {
         placeholder="Input Node.js fetch copy of .m3u8 file URL"
         rightSection={
           <ActionIcon
+            disabled={isDownloading}
             onClick={() => {
               pasteFromClipboard();
             }}
